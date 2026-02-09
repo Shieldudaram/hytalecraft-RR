@@ -167,8 +167,6 @@ The palette includes ~115 verified Hytale block types mapped by color using CIE-
 
 Pipeline architecture inspired by [Falcraft](https://github.com/blendi-remade/falcraft) (Minecraft Fabric mod).
 
-Built with [Claude Code](https://claude.ai/claude-code).
-
 ## License
 
 MIT
