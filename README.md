@@ -31,6 +31,54 @@ Blocks are placed in batches of 500/tick to avoid lag.
 
 **Size** controls the voxel grid resolution (16–128). Larger = more detail, longer generation time.
 
+## Examples
+
+### Structures
+```
+/hcraft generate 96 a massive medieval castle with towers and a drawbridge
+/hcraft generate 80 a gothic cathedral with flying buttresses
+/hcraft generate 64 a japanese pagoda temple surrounded by cherry blossoms
+/hcraft generate 80 a giant treehouse built into an ancient oak tree
+/hcraft generate 64 a wizard tower with glowing crystal spire
+/hcraft generate 96 an ancient roman colosseum
+```
+
+### Creatures & Statues
+```
+/hcraft generate 64 a dragon perched on a cliff with wings spread
+/hcraft generate 80 a colossal stone golem with glowing crystal eyes
+/hcraft generate 48 a giant phoenix bird made of fire
+/hcraft generate 64 a massive kraken emerging from the ocean
+/hcraft generate 96 a titan warrior statue holding a sword and shield
+```
+
+### Vehicles & Ships
+```
+/hcraft generate 80 a pirate galleon with full sails
+/hcraft generate 64 a viking longship with dragon figurehead
+/hcraft generate 48 a hot air balloon with a basket
+/hcraft generate 96 a massive airship with propellers and wooden hull
+```
+
+### Nature & Landscapes
+```
+/hcraft generate 64 a giant mushroom with red cap and white spots
+/hcraft generate 80 a floating island with a waterfall pouring off the edge
+/hcraft generate 48 a huge ancient tree with twisted roots
+/hcraft generate 64 a crystal cave formation with stalactites
+```
+
+### Fantasy & Fun
+```
+/hcraft generate 64 a treasure chest overflowing with gold coins
+/hcraft generate 80 a giant skull fortress built into a mountainside
+/hcraft generate 48 a sword stuck in a stone pedestal
+/hcraft generate 64 a portal gate made of obsidian with rune carvings
+/hcraft generate 96 a floating wizard academy with multiple towers
+```
+
+> **Tip:** Start with size 32 for quick previews, then go to 64–96 for detailed builds. Size 128 gives maximum detail but takes longer to generate.
+
 ## Setup
 
 ### Requirements
