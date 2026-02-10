@@ -1,6 +1,7 @@
 # HytaleCraft
 
 AI-powered text-to-blocks pipeline for Hytale. Describe anything in text and watch it materialize as blocks in your world.
+
 Showcase: https://x.com/jakob4509/status/2021000591128891437
 ```
 /hcraft generate 64 a giant dragon statue
