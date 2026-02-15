@@ -30,7 +30,8 @@ Blocks are placed in batches of 500/tick to avoid lag.
 | `/placeblock` | Test command — places a single Rock_Stone block |
 | `/dumpblocks` | Debug — dumps all registered block type names to a file |
 
-**Size** controls the voxel grid resolution (16–128). Larger = more detail, longer generation time.
+**Size** controls the voxel grid resolution (`16+`).
+There is no hard upper cap in command validation. Larger values increase detail, footprint, and generation cost.
 
 ## Examples
 
@@ -78,7 +79,33 @@ Blocks are placed in batches of 500/tick to avoid lag.
 /hcraft generate 96 a floating wizard academy with multiple towers
 ```
 
-> **Tip:** Start with size 32 for quick previews, then go to 64–96 for detailed builds. Size 128 gives maximum detail but takes longer to generate.
+> **Tip:** Start with size 32 for quick previews, then go to 64–96 for detailed builds.
+> Very large sizes are allowed and will show a warning before generation starts.
+> Caution: extreme sizes can significantly increase runtime and resource usage.
+
+## Configuration
+
+HytaleCraft stores settings in `config.json` under the mod data directory.
+
+Default config:
+
+```json
+{
+  "falApiKey": "",
+  "defaultSize": 32,
+  "maxSize": 128,
+  "warnSizeAbove": 128,
+  "centerOnPlayerXZ": true,
+  "forceLoadChunks": true,
+  "chunkLoadTimeoutSeconds": 60
+}
+```
+
+- `maxSize` (legacy): retained for backward compatibility; no longer enforces an upper size cap.
+- `warnSizeAbove` (legacy): retained for backward compatibility; warning uses a built-in soft threshold.
+- `centerOnPlayerXZ`: When `true`, placement is centered around the player on X/Z.
+- `forceLoadChunks`: When `true`, required chunks are preloaded before block placement.
+- `chunkLoadTimeoutSeconds`: If chunk preload exceeds this timeout, generation aborts before placement.
 
 ## Setup
 

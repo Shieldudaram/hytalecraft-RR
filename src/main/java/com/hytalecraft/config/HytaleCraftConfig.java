@@ -20,7 +20,13 @@ public class HytaleCraftConfig {
     private static class ConfigData {
         String falApiKey = "";
         int defaultSize = 32;
+        // Legacy compatibility field. Generation is no longer capped by config maxSize.
         int maxSize = 128;
+        // Legacy compatibility field. Warning threshold now uses a built-in soft limit.
+        Integer warnSizeAbove = 128;
+        Boolean centerOnPlayerXZ = true;
+        Boolean forceLoadChunks = true;
+        Integer chunkLoadTimeoutSeconds = 60;
     }
 
     public HytaleCraftConfig(Path dataDirectory) {
@@ -34,8 +40,9 @@ public class HytaleCraftConfig {
                 if (Files.exists(configFile)) {
                     String json = Files.readString(configFile);
                     data = GSON.fromJson(json, ConfigData.class);
-                    if (data == null) {
-                        data = new ConfigData();
+                    boolean changed = sanitize();
+                    if (changed) {
+                        save();
                     }
                     LOGGER.atInfo().log("[HytaleCraft] Config loaded");
                 } else {
@@ -76,7 +83,72 @@ public class HytaleCraftConfig {
         return data.defaultSize;
     }
 
+    @Deprecated
     public int getMaxSize() {
         return data.maxSize;
+    }
+
+    @Deprecated
+    public int getWarnSizeAbove() {
+        return data.warnSizeAbove != null ? data.warnSizeAbove : 128;
+    }
+
+    public boolean isCenterOnPlayerXZ() {
+        return data.centerOnPlayerXZ == null || data.centerOnPlayerXZ;
+    }
+
+    public boolean isForceLoadChunks() {
+        return data.forceLoadChunks == null || data.forceLoadChunks;
+    }
+
+    public int getChunkLoadTimeoutSeconds() {
+        return data.chunkLoadTimeoutSeconds != null ? data.chunkLoadTimeoutSeconds : 60;
+    }
+
+    private boolean sanitize() {
+        boolean changed = false;
+
+        if (data == null) {
+            data = new ConfigData();
+            return true;
+        }
+
+        if (data.defaultSize < 16) {
+            data.defaultSize = 16;
+            changed = true;
+        }
+
+        if (data.maxSize < 16) {
+            data.maxSize = 16;
+            changed = true;
+        }
+
+        if (data.warnSizeAbove == null) {
+            data.warnSizeAbove = 128;
+            changed = true;
+        } else if (data.warnSizeAbove < 16) {
+            data.warnSizeAbove = 16;
+            changed = true;
+        }
+
+        if (data.centerOnPlayerXZ == null) {
+            data.centerOnPlayerXZ = true;
+            changed = true;
+        }
+
+        if (data.forceLoadChunks == null) {
+            data.forceLoadChunks = true;
+            changed = true;
+        }
+
+        if (data.chunkLoadTimeoutSeconds == null) {
+            data.chunkLoadTimeoutSeconds = 60;
+            changed = true;
+        } else if (data.chunkLoadTimeoutSeconds < 1) {
+            data.chunkLoadTimeoutSeconds = 1;
+            changed = true;
+        }
+
+        return changed;
     }
 }

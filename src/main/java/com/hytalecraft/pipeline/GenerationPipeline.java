@@ -6,6 +6,7 @@ import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.universe.world.World;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
@@ -82,18 +83,30 @@ public class GenerationPipeline {
             }
         }, ForkJoinPool.commonPool())
 
-        // Step 4: Place blocks on the world thread
-        .thenAcceptAsync(voxelGrid -> {
-            progress.accept("[4/4] Placing blocks in world...");
-            HytaleBlockPlacer placer = new HytaleBlockPlacer();
-            placer.place(world, voxelGrid, originX, originY, originZ, progress);
-        }, world)
+        // Step 4: Place blocks after optional chunk preload
+        .thenCompose(voxelGrid -> {
+            progress.accept("[4/4] Preparing placement...");
+            HytaleBlockPlacer placer = new HytaleBlockPlacer(
+                    config.isForceLoadChunks(),
+                    config.getChunkLoadTimeoutSeconds()
+            );
+            return placer.place(world, voxelGrid, originX, originY, originZ, progress);
+        })
 
         .exceptionally(throwable -> {
-            String msg = throwable.getCause() != null ? throwable.getCause().getMessage() : throwable.getMessage();
+            Throwable cause = unwrap(throwable);
+            String msg = cause.getMessage() != null ? cause.getMessage() : cause.toString();
             progress.accept("Generation failed: " + msg);
             LOGGER.atWarning().log("[Pipeline] Pipeline error: %s", msg);
             return null;
         });
+    }
+
+    private static Throwable unwrap(Throwable throwable) {
+        Throwable current = throwable;
+        while (current instanceof CompletionException && current.getCause() != null) {
+            current = current.getCause();
+        }
+        return current;
     }
 }

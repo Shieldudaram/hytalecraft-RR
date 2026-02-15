@@ -17,6 +17,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 public class GenerateCommand extends AbstractPlayerCommand {
 
+    private static final int SOFT_WARN_SIZE = 128;
+
     private final HytaleCraftConfig config;
     private final RequiredArg<Integer> sizeArg;
     private final RequiredArg<String> promptArg;
@@ -24,7 +26,7 @@ public class GenerateCommand extends AbstractPlayerCommand {
     public GenerateCommand(HytaleCraftConfig config) {
         super("generate", "Generate a 3D model from text: /hcraft generate <size> <prompt>");
         this.config = config;
-        this.sizeArg = withRequiredArg("size", "Voxel grid size (16-128)", ArgTypes.INTEGER);
+        this.sizeArg = withRequiredArg("size", "Voxel grid size (16+)", ArgTypes.INTEGER);
         this.promptArg = withRequiredArg("prompt", "Text prompt describing the 3D model", ArgTypes.STRING);
         setAllowsExtraArguments(true);
     }
@@ -43,9 +45,14 @@ public class GenerateCommand extends AbstractPlayerCommand {
 
         int size = context.get(sizeArg);
 
-        if (size < 16 || size > config.getMaxSize()) {
-            context.sendMessage(Message.raw("Size must be between 16 and " + config.getMaxSize()));
+        if (size < 16) {
+            context.sendMessage(Message.raw("Size must be 16 or greater."));
             return;
+        }
+
+        if (size > SOFT_WARN_SIZE) {
+            context.sendMessage(Message.raw(
+                    "Warning: large generation requested (size " + size + "). This may take longer and use more resources."));
         }
 
         // Build prompt from the input string: strip command prefix + size arg
@@ -65,11 +72,18 @@ public class GenerateCommand extends AbstractPlayerCommand {
 
         Transform transform = playerRef.getTransform();
         Vector3d position = transform.getPosition();
-        int originX = (int) Math.floor(position.x);
+        int playerX = (int) Math.floor(position.x);
         int originY = (int) Math.floor(position.y);
-        int originZ = (int) Math.floor(position.z);
+        int playerZ = (int) Math.floor(position.z);
+
+        boolean centeredPlacement = config.isCenterOnPlayerXZ();
+        int originX = centeredPlacement ? playerX - (size / 2) : playerX;
+        int originZ = centeredPlacement ? playerZ - (size / 2) : playerZ;
+        String placementMode = centeredPlacement ? "centered" : "corner";
 
         context.sendMessage(Message.raw("Starting generation: \"" + prompt + "\" (size: " + size + ")"));
+        context.sendMessage(Message.raw("Placement mode: " + placementMode + " at origin "
+                + originX + ", " + originY + ", " + originZ));
 
         GenerationPipeline pipeline = new GenerationPipeline(config);
         pipeline.execute(prompt, size, world, originX, originY, originZ,

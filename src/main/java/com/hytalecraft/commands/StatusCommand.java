@@ -22,7 +22,8 @@ public class StatusCommand extends AbstractCommand {
         context.sendMessage(Message.raw("HytaleCraft v0.2.0"));
         context.sendMessage(Message.raw("API Key: " + keyStatus));
         context.sendMessage(Message.raw("Default size: " + config.getDefaultSize()));
-        context.sendMessage(Message.raw("Max size: " + config.getMaxSize()));
+        context.sendMessage(Message.raw("Size range: 16+ (no upper cap)"));
+        context.sendMessage(Message.raw("Large sizes warn but are allowed."));
         return CompletableFuture.completedFuture(null);
     }
 }
